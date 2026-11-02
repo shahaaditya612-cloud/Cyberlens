@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberLens – Smart Website Safety & Threat Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0a0f1d;
+            --bg-card: #111827;
+            --bg-hover: #1f2937;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --border: #374151;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--accent-cyan); display: flex; align-items: center; gap: 0.5rem; }
+        .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--accent-cyan); }
+        .main-container { flex: 1; padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        h1, h2, h3 { margin-bottom: 1rem; color: var(--text-main); }
+        p { color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.5; }
+        .form-group { margin-bottom: 1.25rem; }
+        label { display: block; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-muted); }
+        input, select { width: 100%; padding: 0.75rem 1rem; background: var(--bg-base); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-size: 1rem; }
+        input:focus, select:focus { outline: none; border-color: var(--accent-cyan); }
+        .btn { background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan)); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-danger { background: var(--danger); }
+        .auth-container { max-width: 450px; margin: 4rem auto; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: 700; color: var(--accent-cyan); margin-top: 0.5rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
+        th { color: var(--text-muted); font-weight: 600; }
+        .badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .badge-safe { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .badge-suspicious { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🛡️ CyberLens</div>
+        <div class="nav-links" id="navLinks">
+            <!-- Dynamic Navigation -->
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- AUTH SECTION -->
+        <div id="authSection" class="auth-container card">
+            <h2 id="authTitle">Welcome to CyberLens</h2>
+            <p id="authSubtitle">Smart Website Safety & Threat Detection System</p>
+            <div id="authError" style="color: var(--danger); margin-bottom: 1rem; font-size: 0.875rem;"></div>
+            
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <div class="form-group" id="nameGroup" style="display:none;">
+                    <label>Full Name</label>
+                    <input type="text" id="name" placeholder="Shweta Sah">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" required placeholder="shweta@gmail.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn" id="authBtn">Login</button>
+            </form>
+            <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem;">
+                <span id="authSwitchText">Don't have an account?</span> 
+                <a href="#" onclick="toggleAuthMode()" style="color: var(--accent-cyan); text-decoration: none;" id="authSwitchLink">Register</a>
+            </p>
+        </div>
+
+        <!-- DASHBOARD SECTION -->
+        <div id="dashboardSection" class="hidden">
+            <h2>Dashboard Overview</h2>
+            <p>Welcome back, <span id="userNameDisplay">User</span>! Here is your system threat summary.</p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Scans</h3>
+                    <div class="stat-number" id="statTotal">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Safe URLs</h3>
+                    <div class="stat-number" id="statSafe" style="color: var(--success);">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Suspicious</h3>
+                    <div class="stat-number" id="statSuspicious" style="color: var(--warning);">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>High Risk</h3>
+                    <div class="stat-number" id="statRisk" style="color: var(--danger);">0</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🔍 Website URL Scanner</h3>
+                <p>Paste any website link below to instantly analyse threat indicators and security metrics.</p>
+                <div class="form-group" style="display: flex; gap: 1rem;">
+                    <input type="url" id="scanUrlInput" placeholder="https://example.com" style="flex: 1;">
+                    <button class="btn" onclick="runScan()" style="width: auto;">Scan Now</button>
+                </div>
+                <div id="scanResultCard" class="hidden" style="margin-top: 1.5rem; padding: 1.5rem; background: var(--bg-base); border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 id="resultTitle">Analysis Result</h4>
+                    <p id="resultCategoryText" style="margin: 0.5rem 0; font-weight: 600;"></p>
+                    <ul id="resultReasonsList" style="margin-left: 1.25rem; color: var(--text-muted); font-size: 0.875rem;"></ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📜 Recent Scan History</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <input type="text" id="searchHistory" placeholder="Search scanned URL..." onkeyup="filterHistory()" style="max-width: 300px;">
+                    <button class="btn btn-danger" onclick="clearHistory()" style="width: auto; padding: 0.5rem 1rem; font-size: 0.875rem;">Clear All</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>URL</th>
+                            <th>Result</th>
+                            <th>Score</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No scan records found.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isRegisterMode = false;
+        let allScans = [];
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('nameGroup').style.display = isRegisterMode ? 'block' : 'none';
+            document.getElementById('authTitle').innerText = isRegisterMode ? 'Create Account' : 'Welcome to CyberLens';
+            document.getElementById('authSubtitle').innerText = isRegisterMode ? 'Register to start scanning website threats' : 'Smart Website Safety & Threat Detection System';
+            document.getElementById('authBtn').innerText = isRegisterMode ? 'Register' : 'Login';
+            document.getElementById('authSwitchText').innerText = isRegisterMode ? 'Already have an account?' : "Don't have an account?";
+            document.getElementById('authSwitchLink').innerText = isRegisterMode ? 'Login' : 'Register';
+            document.getElementById('authError').innerText = '';
+        }
+
+        async function handleAuth(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const name = document.getElementById('name').value;
+
+            const endpoint = isRegisterMode ? '/register' : '/login';
+            const payload = isRegisterMode ? { name, email, password } : { email, password };
+
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                location.reload();
+            } else {
+                document.getElementById('authError').innerText = data.message;
+            }
+        }
+
+        async function loadDashboardData() {
+            const res = await fetch('/api/scans');
+            const data = await res.json();
+            if (data.success) {
+                allScans = data.scans;
+                updateStats();
+                renderTable(allScans);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('statTotal').innerText = allScans.length;
+            document.getElementById('statSafe').innerText = allScans.filter(s => s.result === 'Safe').length;
+            document.getElementById('statSuspicious').innerText = allScans.filter(s => s.result === 'Suspicious').length;
+            document.getElementById('statRisk').innerText = allScans.filter(s => s.result === 'High Risk').length;
+        }
+
+        function renderTable(scans) {
+            const tbody = document.getElementById('historyTableBody');
+            if (scans.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No scan records found.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = scans.map(s => `
+                <tr>
+                    <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${s.url}</td>
+                    <td><span class="badge ${s.result === 'Safe' ? 'badge-safe' : s.result === 'Suspicious' ? 'badge-suspicious' : 'badge-danger'}">${s.result}</span></td>
+                    <td>${s.score}/100</td>
+                    <td>${s.date}</td>
+                    <td><button class="btn btn-danger" onclick="deleteScan(${s.id})" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; width: auto;">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        async function runScan() {
+            const url = document.getElementById('scanUrlInput').value;
+            if (!url) {
+                alert('Please enter a URL to scan.');
+                return;
+            }
+            const res = await fetch('/api/scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const scan = data.data;
+                const card = document.getElementById('scanResultCard');
+                card.classList.remove('hidden');
+                document.getElementById('resultCategoryText').innerHTML = `Result: <span class="badge ${scan.result === 'Safe' ? 'badge-safe' : scan.result === 'Suspicious' ? 'badge-suspicious' : 'badge-danger'}">${scan.result}</span> (Score: ${scan.score}/100)`;
+                document.getElementById('resultReasonsList').innerHTML = scan.reasons.map(r => `<li>${r}</li>`).join('');
+                loadDashboardData();
+            }
+        }
+
+        async function deleteScan(id) {
+            await fetch(`/api/scans/${id}`, { method: 'DELETE' });
+            loadDashboardData();
+        }
+
+        async function clearHistory() {
+            if (confirm('Are you sure you want to clear all history?')) {
+                await fetch('/api/scans/clear', { method: 'POST' });
+                loadDashboardData();
+            }
+        }
+
+        function filterHistory() {
+            const query = document.getElementById('searchHistory').value.toLowerCase();
+            const filtered = allScans.filter(s => s.url.toLowerCase().includes(query));
+            renderTable(filtered);
+        }
+
+        window.onload = async () => {
+            const res = await fetch('/api/scans');
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('authSection').classList.add('hidden');
+                document.getElementById('dashboardSection').classList.remove('hidden');
+                document.getElementById('navLinks').innerHTML = `
+                    <span style="color: var(--accent-cyan); font-weight: 500;">Shweta Sah</span>
+                    <a href="/logout">Logout</a>
+                `;
+                loadDashboardData();
+            } else {
+                document.getElementById('navLinks').innerHTML = `<a href="#" onclick="toggleAuthMode()">Login / Register</a>`;
+            }
+        };
+    </script>
+</body>
+</html>
